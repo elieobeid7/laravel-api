@@ -11,7 +11,7 @@ use GuzzleHttp\Client;
 
 class UserController extends Controller
 {
-    public function subscribeCallback(Request $request)
+    public function subscribe(Request $request)
     {
 
         $this->validate($request, [
@@ -36,7 +36,7 @@ class UserController extends Controller
 
         $client = new Client();
         $res = $client->get(
-            'http://localhost.com/subscribeCallback',
+            'http://localhost/server/subscribe',
             ['subscriptionId' => $request->subscriptionId, 'userID' => $request->userID, 'msisdn' => $request->msisdn, 'operatorId' => $request->operatorId, 'token' => $token]
         );
         if ($res->getStatusCode()) {
@@ -50,7 +50,7 @@ class UserController extends Controller
         }
     }
 
-    public function unsubscribeCallback(Request $request)
+    public function unsubscribe(Request $request)
     {
         $this->validate($request, [
             'userID' => 'required'
@@ -71,7 +71,7 @@ class UserController extends Controller
         ];
         $client = new Client($headers);
         $res = $client->get(
-            'http://localhost.com/subscribeCallback',
+            'http://localhost/server/unsubscribe',
             ['token' => $token, 'userID' => $request->userID]
         );
         if ($res->getStatusCode()) {

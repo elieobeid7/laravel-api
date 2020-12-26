@@ -15,11 +15,15 @@ use App\Http\Controllers\API\JWTAuthController;
 |
 */
 
-Route::get('subscribe', [JWTAuthController::class, 'UserController@subscribe']);
-Route::get('unsubscribe', [JWTAuthController::class, 'UserController@unsubscribe']);
+Route::group(['prefix' => 'user'], function () {
+    Route::get('subscribe', 'UserController@subscribe');
+    Route::get('unsubscribe', 'UserController@unsubscribe');
+
+});
 
 
-Route::group(['middleware' => 'auth.jwt'], function () {
-    Route::get('unsubscribeCallback', [JWTAuthController::class, 'ServerController@unsubscribeCallback']);
-    Route::get('subscribeCallback', [JWTAuthController::class, 'ServerController@subscribeCallback']);
+Route::group(['middleware' => 'auth.jwt', 'prefix' => 'server'], function () {
+
+    Route::get('subscribe', [JWTAuthController::class, 'ServerController@subscribe']);
+    Route::get('unsubscribe', [JWTAuthController::class, 'ServerController@unsubscribe']);
 });

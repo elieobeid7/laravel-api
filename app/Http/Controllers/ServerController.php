@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ServerController extends Controller
 {
-    public function subscribeCallback(Request $request)
+    public function subscribe(Request $request)
     {
         $jwt_token = null;
         $input = $request->only('token');
@@ -38,7 +38,7 @@ class ServerController extends Controller
         }
     }
 
-    public function unsubscribeCallback(Request $request)
+    public function unsubscribe(Request $request)
     {
         $this->validate($request, [
             'token' => 'required',
