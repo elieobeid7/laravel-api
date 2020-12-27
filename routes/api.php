@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\JWTAuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ServerController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,14 +18,14 @@ use App\Http\Controllers\API\JWTAuthController;
 */
 
 Route::group(['prefix' => 'user'], function () {
-    Route::get('subscribe', 'UserController@subscribe');
-    Route::get('unsubscribe', 'UserController@unsubscribe');
+    Route::get('subscribe', [UserController::class,'subscribe']);
+    Route::get('unsubscribe', [UserController::class,'unsubscribe']);
 
 });
 
 
-Route::group(['middleware' => 'auth.jwt', 'prefix' => 'server'], function () {
+Route::group([ 'prefix' => 'server'], function () {
 
-    Route::get('subscribe', [JWTAuthController::class, 'ServerController@subscribe']);
-    Route::get('unsubscribe', [JWTAuthController::class, 'ServerController@unsubscribe']);
+    Route::get('subscribe', [ServerController::class,'subscribe']);
+    Route::get('unsubscribe', [ServerController::class,'unsubscribe']);
 });

@@ -14,12 +14,11 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('token');
-            $table->string('userID');
-            $table->string('subscriptionId');
-            $table->string('msisdn');
-            $table->string('operatorId');
+            $table->increments('id');
+            $table->string('userID')->nullable();
+            $table->string('subscriptionId')->nullable();
+            $table->string('msisdn')->nullable();
+            $table->string('operatorId')->nullable();
             $table->string('subscriptionStatus')->default('PENDING');;
 
 

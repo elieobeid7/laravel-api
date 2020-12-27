@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'token',
-        'passwords' => 'users',
+        'guard' => env('AUTH_GUARD', 'api'),
+        'subscriptionId' => 'users',
     ],
 
     /*
@@ -42,7 +42,7 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'jwt',
             'provider' => 'users',
             'hash' => false,
         ],
@@ -92,14 +92,14 @@ return [
     |
     */
 
-    'passwords' => [
-        'users' => [
-            'provider' => 'users',
-            'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-    ],
+    // 'passwords' => [
+    //     'users' => [
+    //         'provider' => 'users',
+    //         'table' => 'password_resets',
+    //         'expire' => 60,
+    //         'throttle' => 60,
+    //     ],
+//    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -112,6 +112,6 @@ return [
     |
     */
 
-    'password_timeout' => 10800,
+//    'password_timeout' => 10800,
 
 ];

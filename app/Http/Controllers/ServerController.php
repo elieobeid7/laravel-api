@@ -13,27 +13,22 @@ class ServerController extends Controller
     public function subscribe(Request $request)
     {
         $jwt_token = null;
-        $input = $request->only('token');
+        $input = $request->only('userID', 'subscriptionId');
 
 
         if (!$jwt_token = JWTAuth::attempt($input)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid Auth',
+                'message' => 'Invalid Auth, could not verify token',
             ], Response::HTTP_UNAUTHORIZED);
         } else {
-            $user = new User();
+            User::where('userID', $request->userID)
+            ->Where('subscriptionId', $request->subscriptionId)
+            ->update(['msisdn' => $request->msisdn], ['operatorId' => $request->operatorId] );
 
-            $user->userID = $request->userID;
-
-            $user->subscriptionId = $request->subscriptionId;
-            $user->msisdn = $request->msisdn;
-            $user->operatorId = $request->operatorId;
-            $user->save();
 
             return response()->json([
-                'success' => true,
-                'data' => $user
+                'success' => true
             ], Response::HTTP_OK);
         }
     }
@@ -47,7 +42,7 @@ class ServerController extends Controller
 
         try {
             JWTAuth::invalidate($request->token);
-            $deleteUser = User::where('userID', $request->userID )->delete();
+            $deleteUser = User::where('userID', $request->userID )->Where('subscriptionId', $request->subscriptionId)->delete();
 
             return response()->json([
                 'success' => true,

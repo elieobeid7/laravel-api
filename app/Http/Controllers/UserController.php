@@ -20,33 +20,45 @@ class UserController extends Controller
             'msisdn' => 'required',
             'operatorId' => 'required'
         ]);
+        $user = new User();
 
-        if (!$jwt_token = JWTAuth::attempt($request->userID)) {
+        $user->userID = $request->userID;
+
+        $user->subscriptionId = $request->subscriptionId;
+        $user->save();
+        $credentials = request(['userID', 'subscriptionId']);
+        if (!$token = JWTAuth::attempt($credentials)) {
+            $deleteUser = User::where('userID', $request->userID)->Where('subscriptionId', $request->subscriptionId)->delete();
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid Auth',
+                'message' => 'Invalid Auth, could not create token' ,
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = $this->respondWithToken($jwt_token);
         $headers = [
             'Authorization' => 'Bearer ' . $token,
             'Accept'        => 'application/json',
         ];
 
-        $client = new Client();
+        $client = new Client($headers);
         $res = $client->get(
-            'http://localhost/server/subscribe',
+            'http://localhost:8000/api/server/subscribe',
             ['subscriptionId' => $request->subscriptionId, 'userID' => $request->userID, 'msisdn' => $request->msisdn, 'operatorId' => $request->operatorId, 'token' => $token]
         );
-        if ($res->getStatusCode()) {
+        if ($res->getStatusCode() == 200) {
 
             User::where('userID', $request->userID)
-                ->update(['subscriptionStatus' => 'success']);
+                ->Where('subscriptionId', $request->subscriptionId)
+                ->update(
+                    ['subscriptionStatus' => 'success'],
+                    ['token' => $token]
+                );
 
             return response()->json([
                 'success' => true,
             ], Response::HTTP_OK);
+        } else {
+            $deleteUser = User::where('userID', $request->userID)->Where('subscriptionId', $request->subscriptionId)->delete();
         }
     }
 
@@ -55,15 +67,17 @@ class UserController extends Controller
         $this->validate($request, [
             'userID' => 'required'
         ]);
+        $credentials = request(['userID', 'subscriptionId']);
 
-        if (!$jwt_token = JWTAuth::attempt($request->userID)) {
+
+        if (!$token = JWTAuth::attempt($credentials)) {
+
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid Auth',
+                'message' => 'Invalid Auth, could not create token',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = $this->respondWithToken($jwt_token);
 
         $headers = [
             'Authorization' => 'Bearer ' . $token,
@@ -71,8 +85,8 @@ class UserController extends Controller
         ];
         $client = new Client($headers);
         $res = $client->get(
-            'http://localhost/server/unsubscribe',
-            ['token' => $token, 'userID' => $request->userID]
+            'http://localhost:8000/api/server/unsubscribe',
+            ['token' => $token, 'userID' => $request->userID, 'subscriptionId' => $request->subscriptionId]
         );
         if ($res->getStatusCode()) {
 
